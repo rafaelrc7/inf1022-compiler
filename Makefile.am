@@ -1,6 +1,6 @@
 AM_CFLAGS = -std=gnu11 -Wall -Wextra -I$(builddir)/src
 AM_LDFLAGS =
-AM_YFLAGS = -d
+AM_YFLAGS = -d -t
 
 BUILT_SOURCES = src/provolone_parser.h
 bin_PROGRAMS = provolone

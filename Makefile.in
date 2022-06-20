@@ -298,7 +298,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AM_CFLAGS = -std=gnu11 -Wall -Wextra -I$(builddir)/src
 AM_LDFLAGS = 
-AM_YFLAGS = -d
+AM_YFLAGS = -d -t
 BUILT_SOURCES = src/provolone_parser.h
 provolone_SOURCES = src/provolone.c src/provolone_parser.y src/provolone_lexer.l
 all: $(BUILT_SOURCES) config.h
