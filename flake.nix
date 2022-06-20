@@ -11,7 +11,7 @@
 
   outputs = { self, nixpkgs, flake-utils }: flake-utils.lib.eachDefaultSystem (system:
     let pkgs = import nixpkgs { inherit system; };
-        deps = [ flex bison ];
+        deps = with pkgs; [ flex bison ];
         provolone = with pkgs; stdenv.mkDerivation rec {
           name = "provolone";
           src = ./.;
