@@ -11,7 +11,7 @@
 %%
 
 [[:space:]]+				/* skip */
-"Program"					{ return PROGRAM;	}
+"PROGRAM"					{ return PROGRAM;	}
 "ENTRADA"					{ return ENTRADA;	}
 "SAIDA"						{ return SAIDA;		}
 "ENQUANTO"					{ return ENQUANTO;	}

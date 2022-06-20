@@ -2,6 +2,7 @@
 	#include <stdio.h>
 	#include <stdlib.h>
 
+	void yyerror(const char *s);
 	int yylex(void);
 %}
 
@@ -11,7 +12,7 @@
 %%
 
 program		:	%empty
-			|	ENTRADA varlist SAIDA varlist cmds FIM
+			|	PROGRAM ENTRADA varlist SAIDA varlist cmds FIM
 			;
 
 varlist		:	ID
