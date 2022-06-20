@@ -1,9 +1,9 @@
-# Autotools Flake
-Simple template for C Autotools nix flake projects.
+# INF1022 Final Assigment
+Bootstrapping compiler for a simple defined language.
 
-## Initial Setup
-- Change the package name and version in the [configure.ac](/configure.ac) and
-  [flake.nix](/flake.nix) files.
-- Change [AUTHORS](/AUTHORS) file to reflect your project maintaners.
-- Change [COPYING](/COPYING) to your project license.
+## Bulding
+Instructions at [INSTALL](/INSTALL.md).
+
+## License
+Licensed under the [MIT License](/COPYING).
 
