@@ -52,12 +52,12 @@ void provol_program_free(ProvolProgram *p);
 
 int provol_program_in_new(ProvolProgram *p, const ProvolId id);
 int provol_program_out_new(ProvolProgram *p, const ProvolId id);
-int provol_program_cmd_new(ProvolProgram *p, const ProvolCmd *cmd);
+int provol_program_cmd_new(ProvolProgram *p, ProvolCmd *cmd);
 
-ProvolCmd *provol_cmd_new(const ProvolCmd_t type, const void *val);
+ProvolCmd *provol_cmd_new(const ProvolCmd_t type, void *val);
 void provol_cmd_free(ProvolCmd *cmd);
 
-ProvolWloop *provol_wloop_new(const ProvolId cond, const ProvolCmd *body);
+ProvolWloop *provol_wloop_new(const ProvolId cond, ProvolCmd *body);
 void provol_wloop_free(ProvolWloop *wl);
 
 ProvolAssign *provol_assign_new(const ProvolId src, const ProvolId dest);
