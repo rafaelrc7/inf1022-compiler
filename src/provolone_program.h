@@ -10,6 +10,7 @@ typedef struct provol_program	ProvolProgram;
 typedef char					*ProvolId;
 typedef enum	provol_cmd_t	ProvolCmd_t;
 typedef enum	provol_symb_s	ProvolSymbS;
+typedef enum	provol_var_k	ProvolVar_k;
 typedef struct	provol_sym		ProvolSym;
 
 typedef struct	provol_var		ProvolVar;
@@ -68,6 +69,7 @@ int provol_program_in_new(ProvolProgram *p, const ProvolId id);
 int provol_program_out_new(ProvolProgram *p, const ProvolId id);
 int provol_program_cmd_new(ProvolProgram *p, ProvolCmd *cmd);
 int provol_program_fun_new(ProvolProgram *p, ProvolId name);
+int provol_program_add_vars(ProvolProgram *p, ProvolSym *s, ProvolVar_k k);
 
 void provol_fun_free(ProvolFun *fun);
 

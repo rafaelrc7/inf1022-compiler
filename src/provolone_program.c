@@ -116,6 +116,16 @@ void provol_cmd_free(ProvolCmd *cmd) {
 	provol_cmd_free(next);
 }
 
+int provol_program_add_vars(ProvolProgram *p, ProvolSym *s, ProvolVar_k k) {
+	while (s != NULL) {
+		ProvolId id;
+		s = provol_sym_list_pop(s, &id);
+		provol_prog_var_new(id, k == P_IN, &p->out);
+	}
+
+	return 0;
+}
+
 ProvolSym *provol_sym_list_new(void) {
 	return NULL;
 }
