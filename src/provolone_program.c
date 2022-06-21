@@ -1,5 +1,6 @@
-#include <stdlib.h>
 #include <assert.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "provolone_program.h"
 
@@ -148,7 +149,31 @@ void provol_call_free(ProvolCall *c) {
 	free(c->arg);
 }
 
-ProvolSymbS provol_program_check_symbol(const ProvolProgram *p, const ProvolId sym);
+ProvolSymbS provol_program_check_symbol(const ProvolProgram *p, const ProvolId sym) {
+	ProvolVar *v;
+
+	assert(p != NULL);
+	assert(sym != NULL);
+
+	/* Search in vars */
+	for (v = p->in; v != NULL; v = v->next) {
+		if (strcmp(v->name, sym) == 0)
+			return P_VAR_I;
+	}
+
+	for (v = p->out; v != NULL; v = v->next) {
+		if (strcmp(v->name, sym) == 0) {
+			if (v->is_init)
+				return P_VAR_I;
+			else
+				return P_VAR_U;
+		}
+	}
+
+	/* TODO: FUNCTION SYMBOLS, starting with ZERO and DEC */
+
+	return P_UNDEF;
+}
 
 static int provol_prog_var_new(const ProvolId id, const int is_init, ProvolVar **next) {
 	ProvolVar *var = (ProvolVar *)malloc(sizeof(ProvolVar));
