@@ -62,6 +62,8 @@ int provol_program_out_new(ProvolProgram *p, const ProvolId id);
 int provol_program_cmd_new(ProvolProgram *p, ProvolCmd *cmd);
 int provol_program_fun_new(ProvolProgram *p, ProvolId name);
 
+void provol_fun_free(ProvolFun *fun);
+
 ProvolCmd *provol_cmd_new(const ProvolCmd_t type, void *val);
 void provol_cmd_free(ProvolCmd *cmd);
 
