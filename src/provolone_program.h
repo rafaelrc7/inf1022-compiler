@@ -1,14 +1,16 @@
 #ifndef _PROVOL_PROG_H
 #define _PROVOL_PROG_H
 
-enum provol_cmd_t { P_WLOOP, P_ASSIGN, P_CALL, };
-enum provol_symb_s { P_UNDEF, P_VAR_U, P_VAR_I, P_FUN, };
+enum provol_cmd_t	{ P_WLOOP, P_ASSIGN, P_CALL, };
+enum provol_symb_s	{ P_UNDEF, P_VAR_U, P_VAR_I, P_FUN, };
+enum provol_var_k	{ P_IN, P_OUT, };
 
 typedef struct provol_program	ProvolProgram;
 
 typedef char					*ProvolId;
 typedef enum	provol_cmd_t	ProvolCmd_t;
 typedef enum	provol_symb_s	ProvolSymbS;
+typedef struct	provol_sym		ProvolSym;
 
 typedef struct	provol_var		ProvolVar;
 typedef struct	provol_fun		ProvolFun;
@@ -22,6 +24,11 @@ struct provol_program {
 	ProvolVar	*in, *out;
 	ProvolCmd 	*cmds;
 	ProvolFun	*funs;
+};
+
+struct provol_sym {
+	ProvolId	id;
+	ProvolSym	*next;
 };
 
 struct provol_cmd {
@@ -63,6 +70,11 @@ int provol_program_cmd_new(ProvolProgram *p, ProvolCmd *cmd);
 int provol_program_fun_new(ProvolProgram *p, ProvolId name);
 
 void provol_fun_free(ProvolFun *fun);
+
+ProvolSym *provol_sym_list_new(void);
+ProvolSym *provol_sym_list_push(ProvolSym *s, ProvolId sym);
+ProvolSym *provol_sym_list_pop(ProvolSym *s, ProvolId *sym);
+void provol_sym_list_free(ProvolSym *s);
 
 ProvolCmd *provol_cmd_new(const ProvolCmd_t type, void *val);
 void provol_cmd_free(ProvolCmd *cmd);

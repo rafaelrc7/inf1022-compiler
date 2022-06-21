@@ -116,6 +116,45 @@ void provol_cmd_free(ProvolCmd *cmd) {
 	provol_cmd_free(next);
 }
 
+ProvolSym *provol_sym_list_new(void) {
+	return NULL;
+}
+
+ProvolSym *provol_sym_list_push(ProvolSym *s, ProvolId sym) {
+	ProvolSym *ns;
+
+	assert(sym != NULL);
+
+	ns = (ProvolSym *)malloc(sizeof(ProvolSym));
+
+	ns->next = s;
+	ns->id = sym;
+
+	return ns;
+}
+
+ProvolSym *provol_sym_list_pop(ProvolSym *s, ProvolId *sym) {
+	ProvolSym *ns;
+
+	assert(sym != NULL);
+
+	if (s == NULL)
+		return NULL;
+
+	ns = s->next;
+
+	*sym = s->id;
+	free(s);
+
+	return ns;
+}
+
+void provol_sym_list_free(ProvolSym *s) {
+	ProvolId id;
+	while(s != NULL)
+		s = provol_sym_list_pop(s, &id);
+}
+
 ProvolWloop *provol_wloop_new(const ProvolId cond, ProvolCmd *body) {
 	ProvolWloop *wl;
 
