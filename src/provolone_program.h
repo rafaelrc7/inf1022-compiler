@@ -11,6 +11,7 @@ typedef enum	provol_cmd_t	ProvolCmd_t;
 typedef enum	provol_symb_s	ProvolSymbS;
 
 typedef struct	provol_var		ProvolVar;
+typedef struct	provol_fun		ProvolFun;
 typedef struct 	provol_cmd		ProvolCmd;
 
 typedef struct provol_wloop		ProvolWloop;
@@ -20,6 +21,7 @@ typedef struct provol_call		ProvolCall;
 struct provol_program {
 	ProvolVar	*in, *out;
 	ProvolCmd 	*cmds;
+	ProvolFun	*funs;
 };
 
 struct provol_cmd {
@@ -32,6 +34,11 @@ struct provol_var {
 	ProvolId	name;
 	ProvolVar	*next;
 	int			is_init;
+};
+
+struct provol_fun {
+	ProvolFun *next;
+	ProvolId name;
 };
 
 struct provol_wloop {
@@ -53,6 +60,7 @@ void provol_program_free(ProvolProgram *p);
 int provol_program_in_new(ProvolProgram *p, const ProvolId id);
 int provol_program_out_new(ProvolProgram *p, const ProvolId id);
 int provol_program_cmd_new(ProvolProgram *p, ProvolCmd *cmd);
+int provol_program_fun_new(ProvolProgram *p, ProvolId name);
 
 ProvolCmd *provol_cmd_new(const ProvolCmd_t type, void *val);
 void provol_cmd_free(ProvolCmd *cmd);

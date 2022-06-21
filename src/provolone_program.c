@@ -16,6 +16,7 @@ void provol_program_free(ProvolProgram *p) {
 	provol_prog_vars_free(p->in);
 	provol_prog_vars_free(p->out);
 	provol_cmd_free(p->cmds);
+	// TODO: free funs
 }
 
 int provol_program_in_new(ProvolProgram *p, const ProvolId id) {
@@ -36,6 +37,23 @@ int provol_program_cmd_new(ProvolProgram *p, ProvolCmd *cmd) {
 
 	cmd->next = p->cmds;
 	p->cmds = cmd;
+
+	return 0;
+}
+
+int provol_program_fun_new(ProvolProgram *p, ProvolId name) {
+	ProvolFun *fun;
+
+	assert(p != NULL);
+	assert(name != NULL);
+
+	fun = (ProvolFun *)malloc(sizeof(ProvolFun));
+	if (fun == NULL)
+		return 1;
+
+	fun->name = name;
+	fun->next = p->funs;
+	p->funs = fun;
 
 	return 0;
 }
