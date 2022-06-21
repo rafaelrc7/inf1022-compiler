@@ -180,27 +180,34 @@ void provol_call_free(ProvolCall *c) {
 }
 
 ProvolSymbS provol_program_check_symbol(const ProvolProgram *p, const ProvolId sym) {
-	ProvolVar *v;
+	union {
+		ProvolVar *v;
+		ProvolFun *f;
+	} n;
 
 	assert(p != NULL);
 	assert(sym != NULL);
 
 	/* Search in vars */
-	for (v = p->in; v != NULL; v = v->next) {
-		if (strcmp(v->name, sym) == 0)
+	for (n.v = p->in; n.v != NULL; n.v = n.v->next) {
+		if (strcmp(n.v->name, sym) == 0)
 			return P_VAR_I;
 	}
 
-	for (v = p->out; v != NULL; v = v->next) {
-		if (strcmp(v->name, sym) == 0) {
-			if (v->is_init)
+	for (n.v = p->out; n.v != NULL; n.v = n.v->next) {
+		if (strcmp(n.v->name, sym) == 0) {
+			if (n.v->is_init)
 				return P_VAR_I;
 			else
 				return P_VAR_U;
 		}
 	}
 
-	/* TODO: FUNCTION SYMBOLS, starting with ZERO and DEC */
+	/* Search for function symbols */
+	for (n.f = p->funs; n.f != NULL; n.f = n.f->next) {
+		if (strcmp(n.f->name, sym) == 0)
+			return P_FUN;
+	}
 
 	return P_UNDEF;
 }
