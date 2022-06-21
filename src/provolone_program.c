@@ -8,7 +8,12 @@ static int	provol_prog_var_new(const ProvolId id, const int is_init, ProvolVar *
 static void	provol_prog_vars_free(ProvolVar *vs);
 
 ProvolProgram *provol_program_create(void) {
-	return (ProvolProgram *)calloc(1, sizeof(ProvolProgram));
+	ProvolProgram *p = (ProvolProgram *)calloc(1, sizeof(ProvolProgram));
+	if (p != NULL) {
+		provol_program_fun_new(p, strdup("INC"));
+		provol_program_fun_new(p, strdup("ZERO"));
+	}
+	return p;
 }
 
 void provol_program_free(ProvolProgram *p) {
