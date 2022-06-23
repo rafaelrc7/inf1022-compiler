@@ -174,9 +174,24 @@ static void provol_pc_cmd(FILE *out, ProvolCmd *cmd, int level) {
 		break;
 
 	case P_IF:
+		if (cmd->val.ifelse.else_body != NULL) {
+			fprintf(out, "ZERO(ELSE%d)\n", level);
+			fprintf(out, "INC(ELSE%d)\n", level);
+		}
+
+		for (i = 0; i < level; ++i)
+			fputc('\t', out);
 		fprintf(out, "ENQUANTO %s FACA\n", cmd->val.ifelse.cond_id);
 		provol_pc_cmds(out, cmd->val.ifelse.if_body, level+1);
+		if (cmd->val.ifelse.else_body != NULL)
+			fprintf(out, "ZERO(ELSE%d)\n", level);
 		fprintf(out, "FIM\n");
+
+		if (cmd->val.ifelse.else_body != NULL) {
+			fprintf(out, "ENQUANTO ELSE%d FACA\n", level);
+			provol_pc_cmds(out, cmd->val.ifelse.else_body, level+1);
+			fprintf(out, "FIM\n");
+		}
 		break;
 	}
 }
