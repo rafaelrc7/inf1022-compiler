@@ -67,5 +67,7 @@ ProvolCmd *provol_wloop_new(const ProvolProgram *p, const char *cond_id, LinkedL
 ProvolCmd *provol_assign_new(const ProvolProgram *p, const char *dest, const char *src);
 ProvolCmd *provol_call_new(const ProvolProgram *p, const char *fun, const char *arg);
 
+void provol_prog_print_tree(const ProvolProgram *p);
+
 #endif
 

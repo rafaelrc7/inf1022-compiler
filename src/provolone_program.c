@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -234,5 +235,76 @@ ProvolSymbS provol_program_check_symbol(const ProvolProgram *p, const char *sym)
 		return P_FUN;
 
 	return P_UNDEF;
+}
+
+static void provol_cmd_print(const ProvolCmd *c) {
+	switch (c->type) {
+	case P_WLOOP:
+		printf("WHILE %s do:", c->val.wloop.cond_id);
+		break;
+
+	case P_ASSIGN:
+		printf("%s = %s", c->val.assign.dest, c->val.assign.src);
+		break;
+
+	case P_CALL:
+		printf("%s(%s)", c->val.call.fun, c->val.call.arg);
+		break;
+	}
+}
+
+static void provol_cmds_print_tree(const LinkedList *cmds, const int l) {
+	LLNode *n;
+
+	for (n = cmds->head; n != NULL; n = n->next) {
+		int i;
+		for (i = 0; i < l; ++i)
+			putchar('\t');
+
+		if (n->next == NULL)
+			printf("└── ");
+		else
+			printf("├── ");
+
+		provol_cmd_print((ProvolCmd*)n->val);
+
+		putchar('\n');
+
+		if (((ProvolCmd *)n->val)->type == P_WLOOP)
+			provol_cmds_print_tree(((ProvolCmd *)n->val)->val.wloop.body, l+1);
+	}
+}
+
+void provol_prog_print_tree(const ProvolProgram *p) {
+	LLNode *n;
+
+	printf("------ PROGRAM TREE -----\n");
+	printf("IN Vars: ");
+	for (n = p->in->head; n != NULL; n = n->next) {
+		printf("%s, ", ((ProvolVar *)n->val)->id);
+	}
+	putchar('\n');
+
+	printf("OUT Vars: ");
+	for (n = p->out->head; n != NULL; n = n->next) {
+		printf("%s, ", ((ProvolVar *)n->val)->id);
+	}
+	putchar('\n');
+
+	printf("LOC Vars: ");
+	for (n = p->loc->head; n != NULL; n = n->next) {
+		printf("%s, ", ((ProvolVar *)n->val)->id);
+	}
+	putchar('\n');
+
+	printf("FUNS: ");
+	for (n = p->funs->head; n != NULL; n = n->next) {
+		printf("%s, ", ((const char *)n->val));
+	}
+	putchar('\n');
+
+	puts("CMDS:");
+
+	provol_cmds_print_tree(p->cmds, 0);
 }
 

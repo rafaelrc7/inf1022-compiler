@@ -23,6 +23,8 @@ int main(int argc, char **argv) {
 
 	yyparse(p);
 
+	provol_prog_print_tree(p);
+
 	provol_prog_free(p);
 
 	return 0;
