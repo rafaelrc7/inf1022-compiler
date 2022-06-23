@@ -3,16 +3,6 @@
 
 #include "llist.h"
 
-typedef struct _node Node;
-struct _node {
-	void *val;
-	Node *next;
-};
-
-struct _llist {
-	Node *head, *last;
-};
-
 LinkedList *llist_create(void) {
 	return (LinkedList *)calloc(1, sizeof(LinkedList));
 }
@@ -30,11 +20,11 @@ int llist_is_empty(LinkedList *ll) {
 }
 
 void llist_push(LinkedList *ll, void *v) {
-	Node *n;
+	LLNode *n;
 
 	assert(ll != NULL);
 
-	n = (Node *)malloc(sizeof(Node));
+	n = (LLNode *)malloc(sizeof(LLNode));
 	if (n == NULL)
 		return;
 
@@ -48,11 +38,11 @@ void llist_push(LinkedList *ll, void *v) {
 }
 
 void llist_append(LinkedList *ll, void *v) {
-	Node *n;
+	LLNode *n;
 
 	assert(ll != NULL);
 
-	n = (Node *)malloc(sizeof(Node));
+	n = (LLNode *)malloc(sizeof(LLNode));
 	if (n == NULL)
 		return;
 
@@ -69,7 +59,7 @@ void llist_append(LinkedList *ll, void *v) {
 }
 
 void *llist_pop(LinkedList *ll) {
-	Node *next;
+	LLNode *next;
 	void *val;
 
 	assert(ll != NULL);
@@ -89,7 +79,7 @@ void *llist_pop(LinkedList *ll) {
 }
 
 void *llist_search(const LinkedList *ll, const void *key, int (*cmp)(const void *node, const void *key)) {
-	Node *n;
+	LLNode *n;
 
 	assert(ll != NULL);
 	assert(key != NULL);

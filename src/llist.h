@@ -1,7 +1,16 @@
 #ifndef _LINKED_LIST_H
 #define _LINKED_LIST_H
 
+typedef struct _llist_node LLNode;
+struct _llist_node {
+	void *val;
+	LLNode *next;
+};
+
 typedef struct _llist LinkedList;
+struct _llist {
+	LLNode *head, *last;
+};
 
 LinkedList *llist_create(void);
 void llist_free(LinkedList *ll);
