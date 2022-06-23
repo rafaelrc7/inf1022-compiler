@@ -88,3 +88,18 @@ void *llist_pop(LinkedList *ll) {
 	return val;
 }
 
+void *llist_search(const LinkedList *ll, const void *key, int (*cmp)(const void *node, const void *key)) {
+	Node *n;
+
+	assert(ll != NULL);
+	assert(key != NULL);
+	assert(cmp != NULL);
+
+	for (n = ll->head; n != NULL; n = n->next) {
+		if (cmp(n->val, key) == 0)
+			return n;
+	}
+
+	return NULL;
+}
+

@@ -193,36 +193,45 @@ static void provol_vars_free(LinkedList *vars) {
 	llist_free(vars);
 }
 
-// ProvolSymbS provol_program_check_symbol(const ProvolProgram *p, const char *sym) {
-// 	union {
-// 		ProvolVar *v;
-// 		const char *f;
-// 	} n;
-//
-// 	assert(p != NULL);
-// 	assert(sym != NULL);
-//
-// 	/* Search in vars */
-// 	for (n.v = p->in; n.v != NULL; n.v = n.v->next) {
-// 		if (strcmp(n.v->name, sym) == 0)
-// 			return P_VAR_I;
-// 	}
-//
-// 	for (n.v = p->out; n.v != NULL; n.v = n.v->next) {
-// 		if (strcmp(n.v->name, sym) == 0) {
-// 			if (n.v->is_init)
-// 				return P_VAR_I;
-// 			else
-// 				return P_VAR_U;
-// 		}
-// 	}
-//
-// 	/* Search for function symbols */
-// 	for (n.f = p->funs; n.f != NULL; n.f = n.f->next) {
-// 		if (strcmp(n.f->name, sym) == 0)
-// 			return P_FUN;
-// 	}
-//
-// 	return P_UNDEF;
-// }
+static int cmp_var(const void *v, const void *id) {
+	return strcmp(((const ProvolVar *)v)->id, ((const char *)id));
+}
+
+static int cmp_fun(const void *a, const void *b) {
+	return strcmp(((const char *)a), ((const char *)b));
+}
+
+ProvolSymbS provol_program_check_symbol(const ProvolProgram *p, const char *sym) {
+	union {
+		ProvolVar *v;
+		const char *f;
+	} n;
+
+	assert(p != NULL);
+	assert(sym != NULL);
+
+	/* Search in vars */
+	n.v = (ProvolVar *)llist_search(p->loc, sym, &cmp_var);
+	if (n.v != NULL)
+		return P_VAR_I;
+
+	n.v = (ProvolVar *)llist_search(p->in, sym, &cmp_var);
+	if (n.v != NULL)
+		return P_VAR_I;
+
+	n.v = (ProvolVar *)llist_search(p->out, sym, &cmp_var);
+	if (n.v != NULL) {
+		if (n.v->is_init)
+			return P_VAR_I;
+		else
+			return P_VAR_U;
+	}
+
+	/* Search for function symbols */
+	n.f = (const char *)llist_search(p->funs, sym, &cmp_fun);
+	if (n.f != NULL)
+		return P_FUN;
+
+	return P_UNDEF;
+}
 
