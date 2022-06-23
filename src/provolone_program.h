@@ -24,6 +24,7 @@ struct provol_program {
 	LinkedList	*in, *out, *loc;
 	LinkedList 	*cmds;
 	LinkedList	*funs;
+	int			is_bootstrapped;
 };
 
 struct provol_var {

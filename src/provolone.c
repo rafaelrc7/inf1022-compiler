@@ -10,21 +10,40 @@
 	extern int yydebug;
 #endif
 
+extern FILE *yyin;
+
 int main(int argc, char **argv) {
-	ProvolProgram *p = provol_prog_create();
-	if (p == NULL) {
-		perror("provol_program_create()");
-		exit(EXIT_FAILURE);
-	}
+	unsigned int count = 0;
+	ProvolProgram *p;
+	FILE *in, *tmp, *out;
 
 #ifdef YYDEBUG
 	if (argc > 1 && strcmp(argv[1], "--debug") == 0)
 		yydebug = 1;
 #endif
 
-	yyparse(p);
+	in = stdin;
+	out = stdout;
+	while (1) {
+		p = provol_prog_create();
 
-	provol_cc(stdout, p);
+		yyin = in;
+		yyparse(p);
+		if (in != stdin)
+			fclose(in);
+
+		if (p->is_bootstrapped) {
+			break;
+		} else {
+			// tmp = tmpfile();
+			// provol_pc(tmp, p);
+			// rewind(tmp);
+			// in = tmp;
+			// provol_prog_free(p);
+		}
+	}
+
+	provol_cc(out, p);
 
 	provol_prog_free(p);
 

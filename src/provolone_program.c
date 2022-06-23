@@ -20,6 +20,7 @@ ProvolProgram *provol_prog_create(void) {
 	p->in	= llist_create();
 	p->out	= llist_create();
 	p->loc	= llist_create();
+	p->is_bootstrapped = 1;
 
 	llist_append(p->funs, "INC");
 	llist_append(p->funs, "ZERO");
