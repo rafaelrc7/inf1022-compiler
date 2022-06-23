@@ -20,7 +20,8 @@ ProvolProgram *provol_prog_create(void) {
 	p->out	= llist_create();
 	p->loc	= llist_create();
 
-	// TODO: Add default functions (INC ZERO)
+	llist_append(p->funs, "INC");
+	llist_append(p->funs, "ZERO");
 
 	return p;
 }
