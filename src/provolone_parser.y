@@ -5,14 +5,19 @@
 
 	#include "provolone_program.h"
 
-	void yyerror(const char *s);
+	void yyerror(ProvolProgram *p, const char *s);
 	int yylex(void);
 %}
 
 %parse-param {ProvolProgram *p}
 
-%define api.value.type {const char *}
-%token PROGRAM ENTRADA SAIDA ENQUANTO FACA FIM ID '(' ')' '=' ','
+%define api.value.type union
+%token PROGRAM ENTRADA SAIDA ENQUANTO FACA FIM '(' ')' '=' ','
+
+%token <const char *> ID
+%nterm <LinkedList *> varlist
+%nterm <LinkedList *> cmds
+%nterm <ProvolCmd *> cmd
 
 %%
 
@@ -41,7 +46,7 @@ cmd			:	ENQUANTO ID FACA cmds FIM	{ $$ = provol_wloop_new(p, $2, $4);		}
 
 #include <stdio.h>
 
-void yyerror(const char *s) {
+	void yyerror(struct provol_program *p, const char *s) {
 	fprintf(stderr, "%s\n", s);
 }
 

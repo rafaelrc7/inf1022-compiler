@@ -3,6 +3,7 @@
 	#include <stdlib.h>
 	#include <string.h>
 
+	#include "provolone_program.h"
 	#include "provolone_parser.h"
 
 	int yywrap(void) { return 1; }
@@ -18,7 +19,7 @@
 "FACA"						{ return FACA;		}
 "FIM"						{ return FIM;		}
 [()=,]						{ return yytext[0];	} /* single char tokens */
-[[:alpha:]][[:alnum:]]*		{ yylval = strdup(yytext); return ID; }
+[[:alpha:]][[:alnum:]]*		{ yylval.ID = strdup(yytext); return ID; }
 
 %%
 
