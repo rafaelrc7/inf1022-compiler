@@ -105,6 +105,8 @@ static void provol_cc_cmd(FILE *out, ProvolCmd *cmd, int level) {
 			fprintf(out, "%s = 0;\n", cmd->val.call.arg);
 		}
 		break;
+	default:
+		return;
 	}
 }
 
@@ -169,6 +171,12 @@ static void provol_pc_cmd(FILE *out, ProvolCmd *cmd, int level) {
 
 	case P_CALL:
 		fprintf(out, "%s(%s)\n", cmd->val.call.fun, cmd->val.call.arg);
+		break;
+
+	case P_IF:
+		fprintf(out, "ENQUANTO %s FACA\n", cmd->val.ifelse.cond_id);
+		provol_pc_cmds(out, cmd->val.ifelse.if_body, level+1);
+		fprintf(out, "FIM\n");
 		break;
 	}
 }

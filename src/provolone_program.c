@@ -10,6 +10,8 @@ static void provol_cmds_free(LinkedList *cmds);
 static void provol_funs_free(LinkedList *cmds);
 static void provol_vars_free(LinkedList *cmds);
 
+static void provol_cmds_print_tree(const LinkedList *cmds, const int l);
+
 ProvolProgram *provol_prog_create(void) {
 	ProvolProgram *p = (ProvolProgram *)malloc(sizeof(ProvolProgram));
 	if (p == NULL)
@@ -152,6 +154,25 @@ ProvolCmd *provol_call_new(const ProvolProgram *p, const char *fun, const char *
 	return cmd;
 }
 
+ProvolCmd *provol_if_new(const ProvolProgram *p, const char *cond_id, LinkedList *if_body, LinkedList *else_body) {
+	ProvolCmd *cmd;
+
+	assert(p != NULL);
+	assert(cond_id != NULL);
+	assert(if_body != NULL);
+
+	cmd = (ProvolCmd *)malloc(sizeof(ProvolCmd));
+	if (cmd == NULL)
+		return NULL;
+
+	cmd->type = P_IF;
+	cmd->val.ifelse.cond_id = cond_id;
+	cmd->val.ifelse.if_body = if_body;
+	cmd->val.ifelse.else_body = else_body;
+
+	return cmd;
+}
+
 static void provol_cmds_free(LinkedList *cmds) {
 	ProvolCmd *cmd;
 	while (!llist_is_empty(cmds)) {
@@ -170,6 +191,13 @@ static void provol_cmds_free(LinkedList *cmds) {
 		case P_WLOOP:
 			free((void *)cmd->val.wloop.cond_id);
 				provol_cmds_free(cmd->val.wloop.body);
+			break;
+
+		case P_IF:
+			free((void *)cmd->val.ifelse.cond_id);
+			provol_cmds_free(cmd->val.ifelse.if_body);
+			if (cmd->val.ifelse.else_body != NULL)
+				provol_cmds_free(cmd->val.ifelse.else_body);
 			break;
 		}
 		free(cmd);
@@ -238,10 +266,11 @@ ProvolSymbS provol_program_check_symbol(const ProvolProgram *p, const char *sym)
 	return P_UNDEF;
 }
 
-static void provol_cmd_print(const ProvolCmd *c) {
+static void provol_cmd_print(const ProvolCmd *c, const int l) {
 	switch (c->type) {
 	case P_WLOOP:
-		printf("WHILE %s do:", c->val.wloop.cond_id);
+		printf("WHILE %s do:\n", c->val.wloop.cond_id);
+		provol_cmds_print_tree(c->val.wloop.body, l+1);
 		break;
 
 	case P_ASSIGN:
@@ -251,6 +280,14 @@ static void provol_cmd_print(const ProvolCmd *c) {
 	case P_CALL:
 		printf("%s(%s)", c->val.call.fun, c->val.call.arg);
 		break;
+
+	case P_IF:
+		printf("IF %s do:\n", c->val.ifelse.cond_id);
+		provol_cmds_print_tree(c->val.ifelse.if_body, l+1);
+		if (c->val.ifelse.else_body != NULL) {
+			printf("ELSE:\n");
+			provol_cmds_print_tree(c->val.ifelse.else_body, l+1);
+		}
 	}
 }
 
@@ -267,12 +304,8 @@ static void provol_cmds_print_tree(const LinkedList *cmds, const int l) {
 		else
 			printf("├── ");
 
-		provol_cmd_print((ProvolCmd*)n->val);
-
+		provol_cmd_print((ProvolCmd*)n->val, l);
 		putchar('\n');
-
-		if (((ProvolCmd *)n->val)->type == P_WLOOP)
-			provol_cmds_print_tree(((ProvolCmd *)n->val)->val.wloop.body, l+1);
 	}
 }
 

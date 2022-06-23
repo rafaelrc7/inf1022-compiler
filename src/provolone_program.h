@@ -3,7 +3,7 @@
 
 #include "llist.h"
 
-enum provol_cmd_t	{ P_WLOOP, P_ASSIGN, P_CALL, };
+enum provol_cmd_t	{ P_WLOOP, P_ASSIGN, P_CALL, P_IF };
 enum provol_symb_s	{ P_UNDEF, P_VAR_U, P_VAR_I, P_FUN, };
 enum provol_var_k	{ P_IN, P_OUT, };
 
@@ -19,6 +19,7 @@ typedef struct 	provol_cmd		ProvolCmd;
 typedef struct provol_wloop		ProvolWloop;
 typedef struct provol_assign	ProvolAssign;
 typedef struct provol_call		ProvolCall;
+typedef struct provol_if		ProvolIf;
 
 struct provol_program {
 	LinkedList	*in, *out, *loc;
@@ -45,11 +46,17 @@ struct provol_call {
 	const char	*fun, *arg;
 };
 
+struct provol_if {
+	const char	*cond_id;
+	LinkedList	*if_body, *else_body;
+};
+
 struct provol_cmd {
 	union {
 		ProvolWloop wloop;
 		ProvolAssign assign;
 		ProvolCall call;
+		ProvolIf ifelse;
 	} val;
 	ProvolCmd_t	type;
 };
@@ -67,6 +74,7 @@ LinkedList *provol_cmds_append(LinkedList *cmds, ProvolCmd *cmd);
 ProvolCmd *provol_wloop_new(const ProvolProgram *p, const char *cond_id, LinkedList *body);
 ProvolCmd *provol_assign_new(const ProvolProgram *p, const char *dest, const char *src);
 ProvolCmd *provol_call_new(const ProvolProgram *p, const char *fun, const char *arg);
+ProvolCmd *provol_if_new(const ProvolProgram *p, const char *cond_id, LinkedList *if_body, LinkedList *else_body);
 
 void provol_prog_print_tree(const ProvolProgram *p);
 
