@@ -17,7 +17,7 @@ AX_CHECK_COMPILE_FLAG([-std=gnu11], [], [
 ])
 
 AC_PROG_LEX([noyywrap])
-AC_PROG_YACC
+AX_PROG_BISON
 
 AC_PROG_MAKE_SET
 
