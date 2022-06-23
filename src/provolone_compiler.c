@@ -101,6 +101,8 @@ static void provol_cc_cmd(FILE *out, ProvolCmd *cmd, int level) {
 	case P_CALL:
 		if (strcmp(cmd->val.call.fun, "INC") == 0) {
 			fprintf(out, "++%s;\n", cmd->val.call.arg);
+		} else if (strcmp(cmd->val.call.fun, "DEC") == 0) {
+			fprintf(out, "--%s;\n", cmd->val.call.arg);
 		} else if (strcmp(cmd->val.call.fun, "ZERO") == 0) {
 			fprintf(out, "%s = 0;\n", cmd->val.call.arg);
 		}
