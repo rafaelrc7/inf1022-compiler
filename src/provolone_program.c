@@ -3,289 +3,226 @@
 #include <string.h>
 
 #include "provolone_program.h"
+#include "llist.h"
 
-static int	provol_prog_var_new(const ProvolId id, const int is_init, ProvolVar **next);
-static void	provol_prog_vars_free(ProvolVar *vs);
+static void provol_cmds_free(LinkedList *cmds);
+static void provol_funs_free(LinkedList *cmds);
+static void provol_vars_free(LinkedList *cmds);
 
-ProvolProgram *provol_program_create(void) {
-	ProvolProgram *p = (ProvolProgram *)calloc(1, sizeof(ProvolProgram));
-	if (p != NULL) {
-		provol_program_fun_new(p, strdup("INC"));
-		provol_program_fun_new(p, strdup("ZERO"));
-	}
+ProvolProgram *provol_prog_create(void) {
+	ProvolProgram *p = (ProvolProgram *)malloc(sizeof(ProvolProgram));
+	if (p == NULL)
+		return NULL;
+
+	p->cmds	= NULL;
+	p->funs	= llist_create();
+	p->in	= llist_create();
+	p->out	= llist_create();
+	p->loc	= llist_create();
+
+	// TODO: Add default functions (INC ZERO)
+
 	return p;
 }
 
-void provol_program_free(ProvolProgram *p) {
+void provol_prog_free(ProvolProgram *p) {
 	assert(p != NULL);
-	provol_prog_vars_free(p->in);
-	provol_prog_vars_free(p->out);
-	provol_cmd_free(p->cmds);
-	provol_fun_free(p->funs);
+	provol_cmds_free(p->cmds);
+	provol_vars_free(p->in);
+	provol_vars_free(p->out);
+	provol_vars_free(p->loc);
+	provol_funs_free(p->funs);
+	free(p);
 }
 
-int provol_program_in_new(ProvolProgram *p, const ProvolId id) {
+void provol_prog_add_ins(ProvolProgram *p, LinkedList *var_ids) {
 	assert(p != NULL);
-	assert(id != NULL);
-	return provol_prog_var_new(id, 1, &p->in);
-}
 
-int provol_program_out_new(ProvolProgram *p, const ProvolId id) {
-	assert(p != NULL);
-	assert(id != NULL);
-	return provol_prog_var_new(id, 0, &p->out);
-}
-
-int provol_program_cmd_new(ProvolProgram *p, ProvolCmd *cmd) {
-	assert(p != NULL);
-	assert(cmd != NULL);
-
-	cmd->next = p->cmds;
-	p->cmds = cmd;
-
-	return 0;
-}
-
-int provol_program_fun_new(ProvolProgram *p, ProvolId name) {
-	ProvolFun *fun;
-
-	assert(p != NULL);
-	assert(name != NULL);
-
-	fun = (ProvolFun *)malloc(sizeof(ProvolFun));
-	if (fun == NULL)
-		return 1;
-
-	fun->name = name;
-	fun->next = p->funs;
-	p->funs = fun;
-
-	return 0;
-}
-
-void provol_fun_free(ProvolFun *fun) {
-	ProvolFun *next;
-
-	if (fun == NULL)
+	if (var_ids == NULL)
 		return;
 
-	next = fun->next;
-	free(fun->name);
-	free(fun);
-	provol_fun_free(next);
+	while (!llist_is_empty(var_ids)) {
+		const char *var_id = (const char *)llist_pop(var_ids);
+		ProvolVar *var = (ProvolVar *)malloc(sizeof(ProvolVar));
+		if (var == NULL)
+			return;
+		var->id = var_id;
+		var->is_init = 1;
+
+		llist_append(p->in, (void *)var);
+	}
+	llist_free(var_ids);
 }
 
-ProvolCmd *provol_cmd_new(const ProvolCmd_t type, void *val) {
+void provol_prog_add_outs(ProvolProgram *p, LinkedList *var_ids) {
+	assert(p != NULL);
+
+	if (var_ids == NULL)
+		return;
+
+	while (!llist_is_empty(var_ids)) {
+		const char *var_id = (const char *)llist_pop(var_ids);
+		ProvolVar *var = (ProvolVar *)malloc(sizeof(ProvolVar));
+		if (var == NULL)
+			return;
+		var->id = var_id;
+		var->is_init = 0;
+
+		llist_append(p->out, (void *)var);
+	}
+	llist_free(var_ids);
+}
+
+void provol_prog_add_cmds(ProvolProgram *p, LinkedList *cmds) {
+	assert(cmds != NULL);
+	p->cmds = cmds;
+}
+
+LinkedList *provol_var_append(LinkedList *vars, const char *id) {
+	assert(id != NULL);
+	if (vars == NULL)
+		vars = llist_create();
+	llist_append(vars, (void *)id);
+	return vars;
+}
+
+LinkedList *provol_cmds_append(LinkedList *cmds, ProvolCmd *cmd) {
+	assert(cmd != NULL);
+	if (cmds == NULL)
+		cmds = llist_create();
+	llist_append(cmds, (void *)cmd);
+	return cmds;
+}
+
+ProvolCmd *provol_wloop_new(const ProvolProgram *p, const char *cond_id, LinkedList *body) {
 	ProvolCmd *cmd;
 
-	assert(val != NULL);
+	assert(p != NULL);
+	assert(cond_id != NULL);
+	assert(body != NULL);
 
 	cmd = (ProvolCmd *)malloc(sizeof(ProvolCmd));
 	if (cmd == NULL)
 		return NULL;
-
-	cmd->type = type;
-	cmd->val = val;
-	cmd->next = NULL;
+	cmd->type = P_WLOOP;
+	cmd->val.wloop.cond_id = cond_id;
+	cmd->val.wloop.body = body;
 
 	return cmd;
 }
 
-void provol_cmd_free(ProvolCmd *cmd) {
-	ProvolCmd *next;
+ProvolCmd *provol_assign_new(const ProvolProgram *p, const char *dest, const char *src) {
+	ProvolCmd *cmd;
 
-	if (cmd == NULL)
-		return;
-
-	switch(cmd->type) {
-	case P_WLOOP:
-		provol_wloop_free((ProvolWloop *)cmd->val);
-		break;
-
-	case P_ASSIGN:
-		provol_assign_free((ProvolAssign *)cmd->val);
-		break;
-
-	case P_CALL:
-		provol_call_free((ProvolCall *)cmd->val);
-		break;
-	} /* switch(cmd->type) */
-
-	next = cmd->next;
-	free(cmd);
-	provol_cmd_free(next);
-}
-
-int provol_program_add_vars(ProvolProgram *p, ProvolSym *s, ProvolVar_k k) {
-	while (s != NULL) {
-		ProvolId id;
-		s = provol_sym_list_pop(s, &id);
-		provol_prog_var_new(id, k == P_IN, &p->out);
-	}
-
-	return 0;
-}
-
-ProvolSym *provol_sym_list_new(void) {
-	return NULL;
-}
-
-ProvolSym *provol_sym_list_push(ProvolSym *s, ProvolId sym) {
-	ProvolSym *ns;
-
-	assert(sym != NULL);
-
-	ns = (ProvolSym *)malloc(sizeof(ProvolSym));
-
-	ns->next = s;
-	ns->id = sym;
-
-	return ns;
-}
-
-ProvolSym *provol_sym_list_pop(ProvolSym *s, ProvolId *sym) {
-	ProvolSym *ns;
-
-	assert(sym != NULL);
-
-	if (s == NULL)
-		return NULL;
-
-	ns = s->next;
-
-	*sym = s->id;
-	free(s);
-
-	return ns;
-}
-
-void provol_sym_list_free(ProvolSym *s) {
-	ProvolId id;
-	while(s != NULL)
-		s = provol_sym_list_pop(s, &id);
-}
-
-ProvolWloop *provol_wloop_new(const ProvolId cond, ProvolCmd *body) {
-	ProvolWloop *wl;
-
-	assert(cond != NULL);
-	assert(body != NULL);
-
-	wl = (ProvolWloop *)malloc(sizeof(ProvolWloop));
-	if (wl == NULL)
-		return NULL;
-
-	wl->cond = cond;
-	wl->body = body;
-
-	return wl;
-}
-
-void provol_wloop_free(ProvolWloop *wl) {
-	assert(wl != NULL);
-	free(wl->cond);
-	free(wl->body);
-	free(wl);
-}
-
-ProvolAssign *provol_assign_new(const ProvolId src, const ProvolId dest) {
-	ProvolAssign *as;
-
-	assert(src != NULL);
+	assert(p != NULL);
 	assert(dest != NULL);
+	assert(src != NULL);
 
-	as = (ProvolAssign *)malloc(sizeof(ProvolAssign));
-	if (as == NULL)
+	// TODO: Check if src is initialised
+
+	cmd = (ProvolCmd *)malloc(sizeof(ProvolCmd));
+	if (cmd == NULL)
 		return NULL;
+	cmd->type = P_ASSIGN;
+	cmd->val.assign.dest = dest;
+	cmd->val.assign.src = src;
 
-	as->src = src;
-	as->dest = dest;
-
-	return as;
+	return cmd;
 }
 
-void provol_assign_free(ProvolAssign *as) {
-	assert(as != NULL);
-	free(as->dest);
-	free(as->src);
-	free(as);
-}
+ProvolCmd *provol_call_new(const ProvolProgram *p, const char *fun, const char *arg) {
+	ProvolCmd *cmd;
 
-ProvolCall *provol_call_new(const ProvolId fun, const ProvolId arg) {
-	ProvolCall *c;
-
+	assert(p != NULL);
 	assert(fun != NULL);
 	assert(arg != NULL);
 
-	c = (ProvolCall *)malloc(sizeof(ProvolCall));
-	if (c == NULL)
+	// TODO: check if fun exists and if arg is initialised
+
+	cmd = (ProvolCmd *)malloc(sizeof(ProvolCmd));
+	if (cmd == NULL)
 		return NULL;
+	cmd->type = P_CALL;
+	cmd->val.call.fun = fun;
+	cmd->val.call.arg = arg;
 
-	c->fun = fun;
-	c->arg = arg;
-
-	return c;
+	return cmd;
 }
 
-void provol_call_free(ProvolCall *c) {
-	assert(c != NULL);
-	free(c->fun);
-	free(c->arg);
-}
+static void provol_cmds_free(LinkedList *cmds) {
+	ProvolCmd *cmd;
+	while (!llist_is_empty(cmds)) {
+		cmd = llist_pop(cmds);
+		switch (cmd->type) {
+		case P_ASSIGN:
+			free((void *)cmd->val.assign.dest);
+			free((void *)cmd->val.assign.src);
+			break;
 
-ProvolSymbS provol_program_check_symbol(const ProvolProgram *p, const ProvolId sym) {
-	union {
-		ProvolVar *v;
-		ProvolFun *f;
-	} n;
+		case P_CALL:
+			free((void *)cmd->val.call.fun);
+			free((void *)cmd->val.call.arg);
+			break;
 
-	assert(p != NULL);
-	assert(sym != NULL);
-
-	/* Search in vars */
-	for (n.v = p->in; n.v != NULL; n.v = n.v->next) {
-		if (strcmp(n.v->name, sym) == 0)
-			return P_VAR_I;
-	}
-
-	for (n.v = p->out; n.v != NULL; n.v = n.v->next) {
-		if (strcmp(n.v->name, sym) == 0) {
-			if (n.v->is_init)
-				return P_VAR_I;
-			else
-				return P_VAR_U;
+		case P_WLOOP:
+			free((void *)cmd->val.wloop.cond_id);
+				provol_cmds_free(cmd->val.wloop.body);
+			break;
 		}
+		free(cmd);
 	}
-
-	/* Search for function symbols */
-	for (n.f = p->funs; n.f != NULL; n.f = n.f->next) {
-		if (strcmp(n.f->name, sym) == 0)
-			return P_FUN;
-	}
-
-	return P_UNDEF;
+	llist_free(cmds);
 }
 
-static int provol_prog_var_new(const ProvolId id, const int is_init, ProvolVar **next) {
-	ProvolVar *var = (ProvolVar *)malloc(sizeof(ProvolVar));
-	if (var == NULL)
-		return 1;
-
-	var->name = id;
-	var->is_init = is_init;
-	var->next = *next;
-	*next = var;
-
-	return 0;
+static void provol_funs_free(LinkedList *cmds) {
+	llist_free(cmds);
 }
 
-static void	provol_prog_vars_free(ProvolVar *vs) {
-	while (vs != NULL) {
-		ProvolVar *v = vs;
-		vs = v->next;
+static void provol_vars_free(LinkedList *vars) {
+	ProvolVar *var;
 
-		free(v->name);
-		free(v);
+	if (vars == NULL)
+		return;
+
+	while (!llist_is_empty(vars)) {
+		var = llist_pop(vars);
+		free((void *)var->id);
+		free(var);
 	}
+
+	llist_free(vars);
 }
+
+// ProvolSymbS provol_program_check_symbol(const ProvolProgram *p, const char *sym) {
+// 	union {
+// 		ProvolVar *v;
+// 		const char *f;
+// 	} n;
+//
+// 	assert(p != NULL);
+// 	assert(sym != NULL);
+//
+// 	/* Search in vars */
+// 	for (n.v = p->in; n.v != NULL; n.v = n.v->next) {
+// 		if (strcmp(n.v->name, sym) == 0)
+// 			return P_VAR_I;
+// 	}
+//
+// 	for (n.v = p->out; n.v != NULL; n.v = n.v->next) {
+// 		if (strcmp(n.v->name, sym) == 0) {
+// 			if (n.v->is_init)
+// 				return P_VAR_I;
+// 			else
+// 				return P_VAR_U;
+// 		}
+// 	}
+//
+// 	/* Search for function symbols */
+// 	for (n.f = p->funs; n.f != NULL; n.f = n.f->next) {
+// 		if (strcmp(n.f->name, sym) == 0)
+// 			return P_FUN;
+// 	}
+//
+// 	return P_UNDEF;
+// }
 
