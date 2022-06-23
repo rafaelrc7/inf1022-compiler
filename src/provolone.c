@@ -35,11 +35,11 @@ int main(int argc, char **argv) {
 		if (p->is_bootstrapped) {
 			break;
 		} else {
-			// tmp = tmpfile();
-			// provol_pc(tmp, p);
-			// rewind(tmp);
-			// in = tmp;
-			// provol_prog_free(p);
+			tmp = tmpfile();
+			provol_pc(tmp, p);
+			rewind(tmp);
+			in = tmp;
+			provol_prog_free(p);
 		}
 	}
 
