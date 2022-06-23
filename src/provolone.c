@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "provolone_program.h"
+#include "provolone_compiler.h"
 #include "provolone_parser.h"
 
 #ifdef YYDEBUG
@@ -23,7 +24,7 @@ int main(int argc, char **argv) {
 
 	yyparse(p);
 
-	provol_prog_print_tree(p);
+	provol_cc(stdout, p);
 
 	provol_prog_free(p);
 

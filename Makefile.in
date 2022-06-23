@@ -107,6 +107,7 @@ am_provolone_OBJECTS = src/provolone-provolone.$(OBJEXT) \
 	src/provolone-provolone_parser.$(OBJEXT) \
 	src/provolone-provolone_lexer.$(OBJEXT) \
 	src/provolone-provolone_program.$(OBJEXT) \
+	src/provolone-provolone_compiler.$(OBJEXT) \
 	src/provolone-llist.$(OBJEXT)
 provolone_OBJECTS = $(am_provolone_OBJECTS)
 provolone_LDADD = $(LDADD)
@@ -127,6 +128,7 @@ depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = src/$(DEPDIR)/provolone-llist.Po \
 	src/$(DEPDIR)/provolone-provolone.Po \
+	src/$(DEPDIR)/provolone-provolone_compiler.Po \
 	src/$(DEPDIR)/provolone-provolone_lexer.Po \
 	src/$(DEPDIR)/provolone-provolone_parser.Po \
 	src/$(DEPDIR)/provolone-provolone_program.Po
@@ -312,7 +314,7 @@ AM_LDFLAGS =
 AM_YFLAGS = -d -t
 BUILT_SOURCES = src/provolone_parser.h
 provolone_CPPFLAGS = -I$(builddir)/src -I$(top_srcdir)/src
-provolone_SOURCES = src/provolone.c src/provolone_parser.y src/provolone_lexer.l src/provolone_program.c src/llist.c
+provolone_SOURCES = src/provolone.c src/provolone_parser.y src/provolone_lexer.l src/provolone_program.c src/provolone_compiler.c src/llist.c
 all: $(BUILT_SOURCES) config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
@@ -425,6 +427,8 @@ src/provolone-provolone_lexer.$(OBJEXT): src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
 src/provolone-provolone_program.$(OBJEXT): src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
+src/provolone-provolone_compiler.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
 src/provolone-llist.$(OBJEXT): src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
 
@@ -441,6 +445,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/provolone-llist.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/provolone-provolone.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/provolone-provolone_compiler.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/provolone-provolone_lexer.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/provolone-provolone_parser.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/provolone-provolone_program.Po@am__quote@ # am--include-marker
@@ -522,6 +527,20 @@ src/provolone-provolone_program.obj: src/provolone_program.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/provolone_program.c' object='src/provolone-provolone_program.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(provolone_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o src/provolone-provolone_program.obj `if test -f 'src/provolone_program.c'; then $(CYGPATH_W) 'src/provolone_program.c'; else $(CYGPATH_W) '$(srcdir)/src/provolone_program.c'; fi`
+
+src/provolone-provolone_compiler.o: src/provolone_compiler.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(provolone_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT src/provolone-provolone_compiler.o -MD -MP -MF src/$(DEPDIR)/provolone-provolone_compiler.Tpo -c -o src/provolone-provolone_compiler.o `test -f 'src/provolone_compiler.c' || echo '$(srcdir)/'`src/provolone_compiler.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/provolone-provolone_compiler.Tpo src/$(DEPDIR)/provolone-provolone_compiler.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/provolone_compiler.c' object='src/provolone-provolone_compiler.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(provolone_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o src/provolone-provolone_compiler.o `test -f 'src/provolone_compiler.c' || echo '$(srcdir)/'`src/provolone_compiler.c
+
+src/provolone-provolone_compiler.obj: src/provolone_compiler.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(provolone_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT src/provolone-provolone_compiler.obj -MD -MP -MF src/$(DEPDIR)/provolone-provolone_compiler.Tpo -c -o src/provolone-provolone_compiler.obj `if test -f 'src/provolone_compiler.c'; then $(CYGPATH_W) 'src/provolone_compiler.c'; else $(CYGPATH_W) '$(srcdir)/src/provolone_compiler.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) src/$(DEPDIR)/provolone-provolone_compiler.Tpo src/$(DEPDIR)/provolone-provolone_compiler.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='src/provolone_compiler.c' object='src/provolone-provolone_compiler.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(provolone_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o src/provolone-provolone_compiler.obj `if test -f 'src/provolone_compiler.c'; then $(CYGPATH_W) 'src/provolone_compiler.c'; else $(CYGPATH_W) '$(srcdir)/src/provolone_compiler.c'; fi`
 
 src/provolone-llist.o: src/llist.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(provolone_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT src/provolone-llist.o -MD -MP -MF src/$(DEPDIR)/provolone-llist.Tpo -c -o src/provolone-llist.o `test -f 'src/llist.c' || echo '$(srcdir)/'`src/llist.c
@@ -827,6 +846,7 @@ distclean: distclean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 		-rm -f src/$(DEPDIR)/provolone-llist.Po
 	-rm -f src/$(DEPDIR)/provolone-provolone.Po
+	-rm -f src/$(DEPDIR)/provolone-provolone_compiler.Po
 	-rm -f src/$(DEPDIR)/provolone-provolone_lexer.Po
 	-rm -f src/$(DEPDIR)/provolone-provolone_parser.Po
 	-rm -f src/$(DEPDIR)/provolone-provolone_program.Po
@@ -879,6 +899,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -rf $(top_srcdir)/autom4te.cache
 		-rm -f src/$(DEPDIR)/provolone-llist.Po
 	-rm -f src/$(DEPDIR)/provolone-provolone.Po
+	-rm -f src/$(DEPDIR)/provolone-provolone_compiler.Po
 	-rm -f src/$(DEPDIR)/provolone-provolone_lexer.Po
 	-rm -f src/$(DEPDIR)/provolone-provolone_parser.Po
 	-rm -f src/$(DEPDIR)/provolone-provolone_program.Po
