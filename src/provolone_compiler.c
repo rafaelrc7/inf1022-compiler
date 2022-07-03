@@ -2,6 +2,7 @@
 
 #include <assert.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "provolone_program.h"
@@ -151,6 +152,63 @@ static void provol_pc_cmds(FILE *out, LinkedList *cmds, int level) {
 	}
 }
 
+static void provol_pc_as_expr(FILE *out, ProvolCmd *cmd, int level) {
+	int i;
+
+	fprintf(out, "N1N%d=%s\n", level, cmd->val.assign_e.expr->id1);
+
+	for (i = 0; i < level; ++i)
+		fputc('\t', out);
+	fprintf(out, "N2N%d=%s\n", level, cmd->val.assign_e.expr->id2);
+
+	for (i = 0; i < level; ++i)
+		fputc('\t', out);
+	fprintf(out, "%s=N1N%d\n", cmd->val.assign_e.dest, level);
+
+	switch (cmd->val.assign_e.expr->op) {
+	case '+':
+		for (i = 0; i < level; ++i)
+			fputc('\t', out);
+		fprintf(out, "REPITA N2N%d VEZES\n", level);
+		for (i = 0; i < level+1; ++i)
+			fputc('\t', out);
+		fprintf(out, "INC(%s)\n", cmd->val.assign_e.dest);
+		for (i = 0; i < level; ++i)
+			fputc('\t', out);
+		fprintf(out, "FIM\n");
+		break;
+
+	case '-':
+		for (i = 0; i < level; ++i)
+			fputc('\t', out);
+		fprintf(out, "REPITA N2N%d VEZES\n", level);
+		for (i = 0; i < level+1; ++i)
+			fputc('\t', out);
+		fprintf(out, "DEC(%s)\n", cmd->val.assign_e.dest);
+		for (i = 0; i < level; ++i)
+			fputc('\t', out);
+		fprintf(out, "FIM\n");
+		break;
+
+	case '*':
+		for (i = 0; i < level; ++i)
+			fputc('\t', out);
+		fprintf(out, "REPITA N2N%d VEZES\n", level);
+		for (i = 0; i < level+1; ++i)
+			fputc('\t', out);
+		fprintf(out, "%s = %s + N1N%d\n", cmd->val.assign_e.dest, cmd->val.assign_e.dest, level);
+		for (i = 0; i < level; ++i)
+			fputc('\t', out);
+		fprintf(out, "FIM\n");
+		break;
+
+	default:
+		fprintf(stderr, "ERROR: undentified op '%c'.\n", cmd->val.assign_e.expr->op);
+		exit(EXIT_FAILURE);
+		break;
+	}
+}
+
 static void provol_pc_cmd(FILE *out, ProvolCmd *cmd, int level) {
 	int i;
 
@@ -176,6 +234,10 @@ static void provol_pc_cmd(FILE *out, ProvolCmd *cmd, int level) {
 
 	case P_ASSIGN:
 		fprintf(out, "%s = %s\n", cmd->val.assign.dest, cmd->val.assign.src);
+		break;
+
+	case P_ASSIGN_E:
+		provol_pc_as_expr(out, cmd, level+1);
 		break;
 
 	case P_CALL:

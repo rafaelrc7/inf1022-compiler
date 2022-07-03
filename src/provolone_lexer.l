@@ -26,7 +26,7 @@
 "SE"						{ return SE;		}
 "ENTAO"						{ return ENTAO;		}
 "SENAO"						{ return SENAO;		}
-[()=,]						{ return yytext[0];	} /* single char tokens */
+[()=,+*-]					{ return yytext[0];	} /* single char tokens */
 [[:alpha:]][[:alnum:]]*		{ yylval.ID = strdup(yytext); return ID; }
 
 %%

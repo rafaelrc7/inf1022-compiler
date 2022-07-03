@@ -9,6 +9,7 @@
 static void provol_cmds_free(LinkedList *cmds);
 static void provol_funs_free(LinkedList *cmds);
 static void provol_vars_free(LinkedList *cmds);
+static void provol_expr_free(ProvolExpr *expr);
 
 static void provol_cmds_print_tree(const LinkedList *cmds, const int l);
 static ProvolSymbS provol_program_check_symbol(const ProvolProgram *p, const char *sym);
@@ -208,6 +209,44 @@ ProvolCmd *provol_assign_new(const ProvolProgram *p, const char *dest, const cha
 	return cmd;
 }
 
+ProvolCmd *provol_assign_expr_new(const ProvolProgram *p, const char *dest, ProvolExpr *expr) {
+	ProvolCmd *cmd;
+
+	assert(p != NULL);
+	assert(dest != NULL);
+	assert(expr != NULL);
+
+
+	switch (provol_program_check_symbol(p, dest)) {
+	/* create new variable */
+	case P_UNDEF:
+		provol_new_local_var(p, strdup(dest));
+		break;
+
+	case P_VAR_U:
+		provol_program_init_var(p, dest);
+		break;
+
+	case P_FUN:
+		fprintf(stderr, "ERROR: symbol '%s' is a function\n", dest);
+		exit(EXIT_FAILURE);
+		break;
+
+	default:
+		break;
+	}
+
+	cmd = (ProvolCmd *)malloc(sizeof(ProvolCmd));
+	if (cmd == NULL)
+		return NULL;
+
+	cmd->type = P_ASSIGN_E;
+	cmd->val.assign_e.dest = dest;
+	cmd->val.assign_e.expr = expr;
+
+	return cmd;
+}
+
 ProvolCmd *provol_call_new(const ProvolProgram *p, const char *fun, const char *arg) {
 	ProvolCmd *cmd;
 
@@ -284,6 +323,26 @@ ProvolCmd *provol_if_new(const ProvolProgram *p, const char *cond_id, LinkedList
 	return cmd;
 }
 
+ProvolExpr *provol_expr_new(const ProvolProgram *p, const char *id1, const char *id2, const char op) {
+	ProvolExpr *expr;
+
+	assert(p != NULL);
+	assert(id1 != NULL);
+	assert(id2 != NULL);
+	assert(op == '+' || op == '-' || op == '*');
+
+	expr = (ProvolExpr *)malloc(sizeof(ProvolExpr));
+	if (expr == NULL) {
+		return NULL;
+	}
+
+	expr->id1 = id1;
+	expr->id2 = id2;
+	expr->op = op;
+
+	return expr;
+}
+
 static void provol_cmds_free(LinkedList *cmds) {
 	ProvolCmd *cmd;
 	while (!llist_is_empty(cmds)) {
@@ -292,6 +351,11 @@ static void provol_cmds_free(LinkedList *cmds) {
 		case P_ASSIGN:
 			free((void *)cmd->val.assign.dest);
 			free((void *)cmd->val.assign.src);
+			break;
+
+		case P_ASSIGN_E:
+			provol_expr_free(cmd->val.assign_e.expr);
+			free((void *)cmd->val.assign_e.dest);
 			break;
 
 		case P_CALL:
@@ -319,6 +383,15 @@ static void provol_cmds_free(LinkedList *cmds) {
 		free(cmd);
 	}
 	llist_free(cmds);
+}
+
+static void provol_expr_free(ProvolExpr *expr) {
+	if (expr == NULL)
+		return;
+
+	free((void *)expr->id1);
+	free((void *)expr->id2);
+	free(expr);
 }
 
 static void provol_funs_free(LinkedList *cmds) {
@@ -420,11 +493,17 @@ static void provol_cmd_print(const ProvolCmd *c, const int l) {
 		break;
 
 	case P_ASSIGN:
-		printf("%s = %s", c->val.assign.dest, c->val.assign.src);
+		printf("%s = %s\n", c->val.assign.dest, c->val.assign.src);
+		break;
+
+	case P_ASSIGN_E:
+		printf("%s = %s %c %s\n", c->val.assign_e.dest,
+			c->val.assign_e.expr->id1, c->val.assign_e.expr->op,
+			c->val.assign_e.expr->id2);
 		break;
 
 	case P_CALL:
-		printf("%s(%s)", c->val.call.fun, c->val.call.arg);
+		printf("%s(%s)\n", c->val.call.fun, c->val.call.arg);
 		break;
 
 	case P_IF:
