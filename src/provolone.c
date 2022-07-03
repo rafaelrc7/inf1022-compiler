@@ -137,6 +137,10 @@ int main(int argc, char **argv) {
 		provol_cc(out, p);
 	}
 
+	if (prog_state.output_file != NULL) {
+		fclose(out);
+	}
+
 	provol_prog_free(p);
 
 	return 0;
