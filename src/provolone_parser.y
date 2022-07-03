@@ -12,7 +12,7 @@
 %parse-param {ProvolProgram *p}
 
 %define api.value.type union
-%token PROGRAM ENTRADA SAIDA ENQUANTO FACA FIM SE ENTAO SENAO '(' ')' '=' ','
+%token PROGRAM ENTRADA SAIDA ENQUANTO FACA REPITA VEZES FIM SE ENTAO SENAO '(' ')' '=' ','
 
 %token <const char *> ID
 %nterm <LinkedList *> varlist
@@ -40,8 +40,9 @@ cmds		:	cmd								{ $$ = provol_cmds_append(NULL, $1);							}
 cmd			:	ENQUANTO ID FACA cmds FIM		{ $$ = provol_wloop_new(p, $2, $4);								}
 			|	ID '=' ID						{ $$ = provol_assign_new(p, $1, $3);							}
 			|	ID '(' ID ')'					{ $$ = provol_call_new(p, $1, $3);								}
-			|	SE ID ENTAO cmds SENAO cmds FIM	{ p->is_bootstrapped = 0; $$ = provol_if_new(p, $2, $4, $6);		}
+			|	SE ID ENTAO cmds SENAO cmds FIM	{ p->is_bootstrapped = 0; $$ = provol_if_new(p, $2, $4, $6);	}
 			|	SE ID ENTAO cmds FIM			{ p->is_bootstrapped = 0; $$ = provol_if_new(p, $2, $4, NULL);	}
+			|	REPITA ID VEZES cmds FIM		{ p->is_bootstrapped = 0; $$ = provol_doloop_new(p, $2, $4);	}
 			;
 
 %%

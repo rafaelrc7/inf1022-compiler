@@ -17,6 +17,8 @@
 "SAIDA"						{ return SAIDA;		}
 "ENQUANTO"					{ return ENQUANTO;	}
 "FACA"						{ return FACA;		}
+"REPITA"					{ return REPITA;	}
+"VEZES"						{ return VEZES;		}
 "FIM"						{ return FIM;		}
 "SE"						{ return SE;		}
 "ENTAO"						{ return ENTAO;		}

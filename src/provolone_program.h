@@ -3,7 +3,7 @@
 
 #include "llist.h"
 
-enum provol_cmd_t	{ P_WLOOP, P_ASSIGN, P_CALL, P_IF };
+enum provol_cmd_t	{ P_WLOOP, P_DOLOOP, P_ASSIGN, P_CALL, P_IF };
 enum provol_symb_s	{ P_UNDEF, P_VAR_U, P_VAR_I, P_FUN, };
 enum provol_var_k	{ P_IN, P_OUT, };
 
@@ -17,6 +17,7 @@ typedef struct	provol_var		ProvolVar;
 typedef struct 	provol_cmd		ProvolCmd;
 
 typedef struct provol_wloop		ProvolWloop;
+typedef struct provol_doloop	ProvolDoloop;
 typedef struct provol_assign	ProvolAssign;
 typedef struct provol_call		ProvolCall;
 typedef struct provol_if		ProvolIf;
@@ -38,6 +39,11 @@ struct provol_wloop {
 	LinkedList	*body;
 };
 
+struct provol_doloop {
+	const char	*times;
+	LinkedList	*body;
+};
+
 struct provol_assign {
 	const char	*dest, *src;
 };
@@ -54,6 +60,7 @@ struct provol_if {
 struct provol_cmd {
 	union {
 		ProvolWloop wloop;
+		ProvolDoloop doloop;
 		ProvolAssign assign;
 		ProvolCall call;
 		ProvolIf ifelse;
@@ -72,6 +79,7 @@ LinkedList *provol_var_append(LinkedList *vars, const char *id);
 LinkedList *provol_cmds_append(LinkedList *cmds, ProvolCmd *cmd);
 
 ProvolCmd *provol_wloop_new(const ProvolProgram *p, const char *cond_id, LinkedList *body);
+ProvolCmd *provol_doloop_new(const ProvolProgram *p, const char *times, LinkedList *body);
 ProvolCmd *provol_assign_new(const ProvolProgram *p, const char *dest, const char *src);
 ProvolCmd *provol_call_new(const ProvolProgram *p, const char *fun, const char *arg);
 ProvolCmd *provol_if_new(const ProvolProgram *p, const char *cond_id, LinkedList *if_body, LinkedList *else_body);

@@ -116,6 +116,23 @@ ProvolCmd *provol_wloop_new(const ProvolProgram *p, const char *cond_id, LinkedL
 	return cmd;
 }
 
+ProvolCmd *provol_doloop_new(const ProvolProgram *p, const char *times, LinkedList *body) {
+	ProvolCmd *cmd;
+
+	assert(p != NULL);
+	assert(times != NULL);
+	assert(body != NULL);
+
+	cmd = (ProvolCmd *)malloc(sizeof(ProvolCmd));
+	if (cmd == NULL)
+		return NULL;
+	cmd->type = P_DOLOOP;
+	cmd->val.doloop.times = times;
+	cmd->val.doloop.body = body;
+
+	return cmd;
+}
+
 ProvolCmd *provol_assign_new(const ProvolProgram *p, const char *dest, const char *src) {
 	ProvolCmd *cmd;
 
@@ -190,7 +207,12 @@ static void provol_cmds_free(LinkedList *cmds) {
 
 		case P_WLOOP:
 			free((void *)cmd->val.wloop.cond_id);
-				provol_cmds_free(cmd->val.wloop.body);
+			provol_cmds_free(cmd->val.wloop.body);
+			break;
+
+		case P_DOLOOP:
+			free((void *)cmd->val.doloop.times);
+			provol_cmds_free(cmd->val.doloop.body);
 			break;
 
 		case P_IF:
@@ -271,6 +293,11 @@ static void provol_cmd_print(const ProvolCmd *c, const int l) {
 	case P_WLOOP:
 		printf("WHILE %s do:\n", c->val.wloop.cond_id);
 		provol_cmds_print_tree(c->val.wloop.body, l+1);
+		break;
+
+	case P_DOLOOP:
+		printf("DO %s TIMES:\n", c->val.doloop.times);
+		provol_cmds_print_tree(c->val.doloop.body, l+1);
 		break;
 
 	case P_ASSIGN:

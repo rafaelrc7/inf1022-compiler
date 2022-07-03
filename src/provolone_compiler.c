@@ -167,6 +167,13 @@ static void provol_pc_cmd(FILE *out, ProvolCmd *cmd, int level) {
 		fprintf(out, "FIM\n");
 		break;
 
+	case P_DOLOOP:
+		fprintf(out, "DOLOOP%d = %s\n", level, cmd->val.doloop.times);
+		fprintf(out, "ENQUANTO DOLOOP%d FACA\n", level);
+		provol_pc_cmds(out, cmd->val.doloop.body, level+1);
+		fprintf(out, "DEC(DOLOOP%d)\nFIM\n", level);
+		break;
+
 	case P_ASSIGN:
 		fprintf(out, "%s = %s\n", cmd->val.assign.dest, cmd->val.assign.src);
 		break;
