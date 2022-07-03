@@ -80,14 +80,46 @@ int main(int argc, char **argv) {
 		} else {
 			tmp = tmpfile();
 			provol_pc(tmp, p);
-			rewind(tmp);
-			in = tmp;
 
 			if (prog_state.mode == TREE) {
 				printf("---- TREE %u ----\n", count);
 				provol_prog_print_tree(p);
 				printf("-----------------\n\n");
 			}
+
+			if (prog_state.keep_intermediate_files) {
+				FILE *c;
+				size_t n;
+				char buff[4096];
+
+				snprintf(buff, 4096, "int%u.provol", count);
+
+				c = fopen(buff, "w");
+				if (c == NULL) {
+					perror("fopen()");
+					provol_prog_free(p);
+					if (in != stdin)
+						fclose(in);
+					exit(EXIT_FAILURE);
+				}
+
+				rewind(tmp);
+				while ((n = fread(buff, sizeof(char), 4096, tmp)) > 0) {
+					if (fwrite(buff, sizeof(char), n, c) != n) {
+						perror("fwrite()");
+						provol_prog_free(p);
+						if (in != stdin)
+							fclose(in);
+						fclose(c);
+						exit(EXIT_FAILURE);
+					}
+				}
+
+				fclose(c);
+			}
+
+			rewind(tmp);
+			in = tmp;
 			provol_prog_free(p);
 		}
 	}
