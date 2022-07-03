@@ -5,12 +5,17 @@ Bootstrapping compiler for a simple defined language.
 ### Mudanças da linguagem base
 - Eu inclui uma instrução ``DEC(X)`` que decrementa uma variável
 - Eu adicionei a opção de definir o nome do módulo, opcionalmente escrevendo um
-  ID ao lado de PROGRAM
+  ``ID`` ao lado de ``PROGRAM``
 
 ### Adições de bootstrapping
 - IF
 - IF/ELSE
 - loop REPITA n VEZES cmds FIM
+
+#### Assigment de expressões simples
+- ID = ID + ID
+- ID = ID - ID
+- ID = ID * ID
 
 ## Bulding
 Instructions at [INSTALL](/INSTALL.md).
