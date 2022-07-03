@@ -3,26 +3,33 @@
 
 #include "llist.h"
 
+/* ENUM para os tipos de comando que existem */
 enum provol_cmd_t	{ P_WLOOP, P_DOLOOP, P_ASSIGN, P_ASSIGN_E, P_CALL, P_IF };
+
+/* ENUM para os estados dos símbolos possíveis: não definido, variável não
+ * inicializada, variável inicializada e função */
 enum provol_symb_s	{ P_UNDEF, P_VAR_U, P_VAR_I, P_FUN, };
+
+/* ENUM para tipo da variável */
 enum provol_var_k	{ P_IN, P_OUT, };
 
-typedef struct provol_program		ProvolProgram;
+typedef struct provol_program		ProvolProgram;		/* struct que representa o programa completo */
 
+/* typedefs para os enums acima */
 typedef enum	provol_cmd_t		ProvolCmd_t;
 typedef enum	provol_symb_s		ProvolSymbS;
 typedef enum	provol_var_k		ProvolVar_k;
 
-typedef struct	provol_var			ProvolVar;
-typedef struct 	provol_cmd			ProvolCmd;
+typedef struct	provol_var			ProvolVar;			/* struct que representa variável */
+typedef struct 	provol_cmd			ProvolCmd;			/* struct que representa um comand */
 
-typedef struct provol_wloop			ProvolWloop;
-typedef struct provol_doloop		ProvolDoloop;
-typedef struct provol_assign		ProvolAssign;
-typedef struct provol_assign_expr	ProvolAssignExpr;
-typedef struct provol_call			ProvolCall;
-typedef struct provol_if			ProvolIf;
-typedef struct provol_expr			ProvolExpr;
+typedef struct provol_wloop			ProvolWloop;		/* while loop */
+typedef struct provol_doloop		ProvolDoloop;		/* repita n vezes loop */
+typedef struct provol_assign		ProvolAssign;		/* assigment de variável a variável */
+typedef struct provol_assign_expr	ProvolAssignExpr;	/* assignment de expressão a variável */
+typedef struct provol_call			ProvolCall;			/* call de função */
+typedef struct provol_if			ProvolIf;			/* if/else */
+typedef struct provol_expr			ProvolExpr;			/* expressão */
 
 struct provol_program {
 	LinkedList	*in, *out, *loc;

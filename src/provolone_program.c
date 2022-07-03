@@ -26,8 +26,9 @@ ProvolProgram *provol_prog_create(void) {
 	p->in	= llist_create();
 	p->out	= llist_create();
 	p->loc	= llist_create();
-	p->is_bootstrapped = 1;
+	p->is_bootstrapped = 1;		/* Assume inicialmente que programa é provolone puro */
 
+	/* Adiciona os símbolos das funções builtin */
 	llist_append(p->funs, "INC");
 	llist_append(p->funs, "DEC");
 	llist_append(p->funs, "ZERO");
