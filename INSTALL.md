@@ -1,14 +1,27 @@
-# Nix
+# Build Instructions
+
+- [GNU Autotools](#gnu-autotools)
+- [Nix](#nix)
+
+## GNU Autotools
+Works for any POSIX system.
+
+### Dependencies
+- Flex
+- Bison
+- GCC
+
+### Instructions
+```sh
+mkdir build && cd build
+../configure && make
+./provolone --version
+```
+
+## Nix
 
 ```sh
 nix build
-```
-
-# Autotools
-
-```sh
-./autogen.sh
-mkdir build && cd build
-../configure && make
+./result/bin/provolone --version
 ```
 
