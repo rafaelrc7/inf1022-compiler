@@ -6,7 +6,7 @@
 #include "provolone_compiler.h"
 #include "provolone_parser.h"
 
-#ifdef YYDEBUG
+#if YYDEBUG == 1
 	extern int yydebug;
 #endif
 
@@ -17,7 +17,7 @@ int main(int argc, char **argv) {
 	ProvolProgram *p;
 	FILE *in, *tmp, *out;
 
-#ifdef YYDEBUG
+#if YYDEBUG == 1
 	if (argc > 1 && strcmp(argv[1], "--debug") == 0)
 		yydebug = 1;
 #endif
@@ -28,8 +28,9 @@ int main(int argc, char **argv) {
 		p = provol_prog_create();
 
 		yyin = in;
-		yyparse(p);
-		provol_prog_print_tree(p);
+		if (yyparse(p) != 0) {
+			exit(EXIT_FAILURE);
+		}
 		if (in != stdin)
 			fclose(in);
 
