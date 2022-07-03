@@ -161,12 +161,11 @@ static void provol_pc_as_expr(FILE *out, ProvolCmd *cmd, int level) {
 		fputc('\t', out);
 	fprintf(out, "N2N%d=%s\n", level, cmd->val.assign_e.expr->id2);
 
-	for (i = 0; i < level; ++i)
-		fputc('\t', out);
-	fprintf(out, "%s=N1N%d\n", cmd->val.assign_e.dest, level);
-
 	switch (cmd->val.assign_e.expr->op) {
 	case '+':
+		for (i = 0; i < level; ++i)
+			fputc('\t', out);
+		fprintf(out, "%s=N1N%d\n", cmd->val.assign_e.dest, level);
 		for (i = 0; i < level; ++i)
 			fputc('\t', out);
 		fprintf(out, "REPITA N2N%d VEZES\n", level);
@@ -181,6 +180,9 @@ static void provol_pc_as_expr(FILE *out, ProvolCmd *cmd, int level) {
 	case '-':
 		for (i = 0; i < level; ++i)
 			fputc('\t', out);
+		fprintf(out, "%s=N1N%d\n", cmd->val.assign_e.dest, level);
+		for (i = 0; i < level; ++i)
+			fputc('\t', out);
 		fprintf(out, "REPITA N2N%d VEZES\n", level);
 		for (i = 0; i < level+1; ++i)
 			fputc('\t', out);
@@ -191,6 +193,9 @@ static void provol_pc_as_expr(FILE *out, ProvolCmd *cmd, int level) {
 		break;
 
 	case '*':
+		for (i = 0; i < level; ++i)
+			fputc('\t', out);
+		fprintf(out, "ZERO(%s)\n", cmd->val.assign_e.dest);
 		for (i = 0; i < level; ++i)
 			fputc('\t', out);
 		fprintf(out, "REPITA N2N%d VEZES\n", level);
