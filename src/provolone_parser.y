@@ -56,6 +56,7 @@ cmd			:	ENQUANTO ID FACA cmds FIM		{ $$ = provol_wloop_new(p, $2, $4);								}
 #include <stdio.h>
 
 void yyerror(struct provol_program *p, const char *s) {
+	(void)(p); /* nop - supress unused parameter warning */
 	fprintf(stderr, "%s\n", s);
 }
 

@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "config.h"
+#include <config.h>
 
 #include "provolone_program.h"
 #include "provolone_compiler.h"
@@ -57,6 +57,7 @@ int main(int argc, char **argv) {
 	FILE *in, *tmp, *out;
 	struct state prog_state;
 
+	/* default settings */
 	prog_state.keep_intermediate_files = 0;
 	prog_state.mode = COMPILE_C;
 	prog_state.output_file = NULL;

@@ -9,6 +9,9 @@
 	int yywrap(void) { return 1; }
 %}
 
+%option nounput
+%option noinput
+
 %%
 
 [[:space:]]+				/* skip */
