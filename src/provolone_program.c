@@ -28,6 +28,7 @@ ProvolProgram *provol_prog_create(void) {
 	p->is_bootstrapped = 1;
 
 	llist_append(p->funs, "INC");
+	llist_append(p->funs, "DEC");
 	llist_append(p->funs, "ZERO");
 
 	return p;
