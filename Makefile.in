@@ -86,6 +86,8 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
+build_triplet = @build@
+host_triplet = @host@
 bin_PROGRAMS = provolone$(EXEEXT)
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -124,7 +126,7 @@ am__v_at_ = $(am__v_at_@AM_DEFAULT_V@)
 am__v_at_0 = @
 am__v_at_1 = 
 DEFAULT_INCLUDES = -I.@am__isrc@
-depcomp = $(SHELL) $(top_srcdir)/depcomp
+depcomp = $(SHELL) $(top_srcdir)/scripts/depcomp
 am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = src/$(DEPDIR)/provolone-llist.Po \
 	src/$(DEPDIR)/provolone-provolone.Po \
@@ -155,7 +157,7 @@ AM_V_LEX = $(am__v_LEX_@AM_V@)
 am__v_LEX_ = $(am__v_LEX_@AM_DEFAULT_V@)
 am__v_LEX_0 = @echo "  LEX     " $@;
 am__v_LEX_1 = 
-YLWRAP = $(top_srcdir)/ylwrap
+YLWRAP = $(top_srcdir)/scripts/ylwrap
 @MAINTAINER_MODE_FALSE@am__skipyacc = test -f $@ ||
 am__yacc_c2h = sed -e s/cc$$/hh/ -e s/cpp$$/hpp/ -e s/cxx$$/hxx/ \
 		   -e s/c++$$/h++/ -e s/c$$/h/
@@ -190,10 +192,16 @@ am__define_uniq_tagged_files = \
     if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
   done | $(am__uniquify_input)`
 AM_RECURSIVE_TARGETS = cscope
-am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/config.h.in AUTHORS \
-	COPYING ChangeLog INSTALL.md NEWS README.md compile depcomp \
-	install-sh missing src/provolone_lexer.c \
-	src/provolone_parser.c src/provolone_parser.h ylwrap
+am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/config.h.in \
+	$(top_srcdir)/scripts/compile \
+	$(top_srcdir)/scripts/config.guess \
+	$(top_srcdir)/scripts/config.sub $(top_srcdir)/scripts/depcomp \
+	$(top_srcdir)/scripts/install-sh $(top_srcdir)/scripts/missing \
+	$(top_srcdir)/scripts/ylwrap AUTHORS COPYING ChangeLog \
+	INSTALL.md NEWS README.md scripts/compile scripts/config.guess \
+	scripts/config.sub scripts/depcomp scripts/install-sh \
+	scripts/missing scripts/ylwrap src/provolone_lexer.c \
+	src/provolone_parser.c src/provolone_parser.h
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -277,14 +285,22 @@ am__quote = @am__quote@
 am__tar = @am__tar@
 am__untar = @am__untar@
 bindir = @bindir@
+build = @build@
 build_alias = @build_alias@
+build_cpu = @build_cpu@
+build_os = @build_os@
+build_vendor = @build_vendor@
 builddir = @builddir@
 datadir = @datadir@
 datarootdir = @datarootdir@
 docdir = @docdir@
 dvidir = @dvidir@
 exec_prefix = @exec_prefix@
+host = @host@
 host_alias = @host_alias@
+host_cpu = @host_cpu@
+host_os = @host_os@
+host_vendor = @host_vendor@
 htmldir = @htmldir@
 includedir = @includedir@
 infodir = @infodir@
