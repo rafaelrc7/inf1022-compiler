@@ -3,24 +3,20 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef HAVE_CONFIG_H
 #include <config.h>
+const char *argp_program_version = PACKAGE_STRING;
+const char *argp_program_bug_address = "<" PACKAGE_BUGREPORT ">";
+#else /* #ifdef HAVE_CONFIG_H */
+const char *argp_program_version = "Provol 1.0";
+#endif /* #ifdef HAVE_CONFIG_H */
 
 #include "provolone_program.h"
 #include "provolone_compiler.h"
 #include "provolone_parser.h"
 
 #if YYDEBUG == 1
-	extern int yydebug;
-#endif
-
-#ifdef PACKAGE_STRING
-const char *argp_program_version = PACKAGE_STRING;
-#else
-const char *argp_program_version = "Provol 1.0";
-#endif
-
-#ifdef PACKAGE_BUGREPORT
-const char *argp_program_bug_address = "<" PACKAGE_BUGREPORT ">";
+extern int yydebug;
 #endif
 
 static struct argp_option options[] = {
