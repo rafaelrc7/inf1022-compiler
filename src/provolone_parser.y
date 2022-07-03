@@ -22,7 +22,11 @@
 %%
 
 program		:	%empty
-			|	PROGRAM in_def out_def cmds FIM { provol_prog_add_cmds(p, $4);									}
+			|	PROGRAM program_id in_def out_def cmds FIM { provol_prog_add_cmds(p, $5);						}
+			;
+
+program_id	:	%empty							{ provol_program_set_name(p, NULL);								}
+			|	ID								{ provol_program_set_name(p, $1);								}
 			;
 
 in_def		:	ENTRADA varlist					{ provol_prog_add_ins(p, $2);									}

@@ -41,7 +41,22 @@ void provol_prog_free(ProvolProgram *p) {
 	provol_vars_free(p->out);
 	provol_vars_free(p->loc);
 	provol_funs_free(p->funs);
+	free((void *)p->id);
 	free(p);
+}
+
+void provol_program_set_name(ProvolProgram *p, const char *id) {
+	assert(p != NULL);
+
+	if (id == NULL) {
+		p->id = strdup("provol_fun");
+		if (p->id == NULL) {
+			perror("strdup()");
+			exit(EXIT_FAILURE);
+		}
+	} else {
+		p->id = id;
+	}
 }
 
 void provol_prog_add_ins(ProvolProgram *p, LinkedList *var_ids) {

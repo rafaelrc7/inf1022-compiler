@@ -26,6 +26,7 @@ struct provol_program {
 	LinkedList	*in, *out, *loc;
 	LinkedList 	*cmds;
 	LinkedList	*funs;
+	const char	*id;
 	int			is_bootstrapped;
 };
 
@@ -70,6 +71,8 @@ struct provol_cmd {
 
 ProvolProgram *provol_prog_create(void);
 void provol_prog_free(ProvolProgram *p);
+
+void provol_program_set_name(ProvolProgram *p, const char *id);
 
 void provol_prog_add_ins(ProvolProgram *p, LinkedList *vars);
 void provol_prog_add_outs(ProvolProgram *p, LinkedList *vars);

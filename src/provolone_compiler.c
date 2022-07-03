@@ -15,7 +15,7 @@ int provol_cc(FILE *out, const ProvolProgram *p) {
 	assert(out != NULL);
 	assert(p != NULL);
 
-	fprintf(out, "void provol_fun(");
+	fprintf(out, "void %s(", p->id);
 	for (LLNode *n = p->in->head; n != NULL; n = n->next) {
 		if (n->next != NULL) {
 			fprintf(out, "unsigned int %s, ", ((ProvolVar *)n->val)->id);
@@ -113,7 +113,7 @@ static void provol_cc_cmd(FILE *out, ProvolCmd *cmd, int level) {
 }
 
 int provol_pc(FILE *out, const ProvolProgram *p) {
-	fprintf(out, "PROGRAM\n");
+	fprintf(out, "PROGRAM %s\n", p->id);
 
 	if (!llist_is_empty(p->in)) {
 		fprintf(out, "ENTRADA ");
