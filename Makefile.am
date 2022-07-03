@@ -1,4 +1,4 @@
-AM_CFLAGS = -std=gnu11 -Wall -Wextra
+AM_CFLAGS = -std=gnu11 -Wall -Wextra -pedantic
 AM_LDFLAGS =
 AM_YFLAGS = -d -t
 
