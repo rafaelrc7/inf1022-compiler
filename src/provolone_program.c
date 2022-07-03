@@ -146,17 +146,17 @@ ProvolCmd *provol_assign_new(const ProvolProgram *p, const char *dest, const cha
 
 	switch (provol_program_check_symbol(p, src)) {
 	case P_UNDEF:
-		fprintf(stderr, "ERROR: %s is undefined\n", src);
+		fprintf(stderr, "ERROR: symbol '%s' is not defined\n", src);
 		exit(EXIT_FAILURE);
 		break;
 
 	case P_VAR_U:
-		fprintf(stderr, "ERROR: %s is unitialised\n", src);
+		fprintf(stderr, "ERROR: variable '%s' is unitialised\n", src);
 		exit(EXIT_FAILURE);
 		break;
 
 	case P_FUN:
-		fprintf(stderr, "ERROR: %s is a function\n", src);
+		fprintf(stderr, "ERROR: symbol '%s' is a function\n", src);
 		exit(EXIT_FAILURE);
 		break;
 
@@ -167,7 +167,7 @@ ProvolCmd *provol_assign_new(const ProvolProgram *p, const char *dest, const cha
 	switch (provol_program_check_symbol(p, dest)) {
 	/* create new variable */
 	case P_UNDEF:
-		provol_new_local_var(p, dest);
+		provol_new_local_var(p, strdup(dest));
 		break;
 
 	case P_VAR_U:
@@ -175,7 +175,7 @@ ProvolCmd *provol_assign_new(const ProvolProgram *p, const char *dest, const cha
 		break;
 
 	case P_FUN:
-		fprintf(stderr, "ERROR: %s is a function\n", dest);
+		fprintf(stderr, "ERROR: symbol '%s' is a function\n", dest);
 		exit(EXIT_FAILURE);
 		break;
 
@@ -200,7 +200,45 @@ ProvolCmd *provol_call_new(const ProvolProgram *p, const char *fun, const char *
 	assert(fun != NULL);
 	assert(arg != NULL);
 
-	// TODO: check if fun exists and if arg is initialised
+	switch (provol_program_check_symbol(p, fun)) {
+	case P_UNDEF:
+		fprintf(stderr, "ERROR: symbol '%s' is not defined.\n", fun);
+		exit(EXIT_FAILURE);
+
+	case P_VAR_I:
+	case P_VAR_U:
+		fprintf(stderr, "ERROR: symbol '%s' is not a function.\n", fun);
+		exit(EXIT_FAILURE);
+
+	case P_FUN:
+		break;
+	}
+
+	switch (provol_program_check_symbol(p, arg)) {
+	case P_UNDEF:
+		if (strcmp(fun, "ZERO") == 0) {
+			provol_new_local_var(p, strdup(arg));
+		} else {
+			fprintf(stderr, "ERROR: symbol '%s' is not defined.\n", arg);
+			exit(EXIT_FAILURE);
+		}
+		break;
+
+	case P_FUN:
+		fprintf(stderr, "ERROR: symbol '%s' is a function.\n", arg);
+		break;
+
+	case P_VAR_U:
+		if (strcmp(fun, "ZERO") == 0) {
+			provol_program_init_var(p, arg);
+		} else {
+			fprintf(stderr, "ERROR: variable '%s' is unitialised.\n", arg);
+		}
+		break;
+
+	case P_VAR_I:
+		break;
+	}
 
 	cmd = (ProvolCmd *)malloc(sizeof(ProvolCmd));
 	if (cmd == NULL)
