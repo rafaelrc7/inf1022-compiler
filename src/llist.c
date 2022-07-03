@@ -87,7 +87,7 @@ void *llist_search(const LinkedList *ll, const void *key, int (*cmp)(const void 
 
 	for (n = ll->head; n != NULL; n = n->next) {
 		if (cmp(n->val, key) == 0)
-			return n;
+			return n->val;
 	}
 
 	return NULL;

@@ -22,11 +22,13 @@
 %%
 
 program		:	%empty
-			|	PROGRAM ENTRADA varlist SAIDA varlist cmds FIM {
-					provol_prog_add_ins(p, $3);
-					provol_prog_add_outs(p, $5);
-					provol_prog_add_cmds(p, $6);
-				}
+			|	PROGRAM in_def out_def cmds FIM { provol_prog_add_cmds(p, $4);									}
+			;
+
+in_def		:	ENTRADA varlist					{ provol_prog_add_ins(p, $2);									}
+			;
+
+out_def		:	SAIDA varlist					{ provol_prog_add_outs(p, $2);									}
 			;
 
 varlist		:	ID								{ $$ = provol_var_append(NULL, $1);								}

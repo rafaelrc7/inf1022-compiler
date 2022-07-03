@@ -11,6 +11,9 @@ static void provol_funs_free(LinkedList *cmds);
 static void provol_vars_free(LinkedList *cmds);
 
 static void provol_cmds_print_tree(const LinkedList *cmds, const int l);
+static ProvolSymbS provol_program_check_symbol(const ProvolProgram *p, const char *sym);
+static void provol_program_init_var(const ProvolProgram *p, const char *sym);
+static void provol_new_local_var(const ProvolProgram *p, const char *id);
 
 ProvolProgram *provol_prog_create(void) {
 	ProvolProgram *p = (ProvolProgram *)malloc(sizeof(ProvolProgram));
@@ -140,7 +143,44 @@ ProvolCmd *provol_assign_new(const ProvolProgram *p, const char *dest, const cha
 	assert(dest != NULL);
 	assert(src != NULL);
 
-	// TODO: Check if src is initialised
+	switch (provol_program_check_symbol(p, src)) {
+	case P_UNDEF:
+		fprintf(stderr, "ERROR: %s is undefined\n", src);
+		exit(EXIT_FAILURE);
+		break;
+
+	case P_VAR_U:
+		fprintf(stderr, "ERROR: %s is unitialised\n", src);
+		exit(EXIT_FAILURE);
+		break;
+
+	case P_FUN:
+		fprintf(stderr, "ERROR: %s is a function\n", src);
+		exit(EXIT_FAILURE);
+		break;
+
+	default:
+		break;
+	}
+
+	switch (provol_program_check_symbol(p, dest)) {
+	/* create new variable */
+	case P_UNDEF:
+		provol_new_local_var(p, dest);
+		break;
+
+	case P_VAR_U:
+		provol_program_init_var(p, dest);
+		break;
+
+	case P_FUN:
+		fprintf(stderr, "ERROR: %s is a function\n", dest);
+		exit(EXIT_FAILURE);
+		break;
+
+	default:
+		break;
+	}
 
 	cmd = (ProvolCmd *)malloc(sizeof(ProvolCmd));
 	if (cmd == NULL)
@@ -254,7 +294,7 @@ static int cmp_fun(const void *a, const void *b) {
 	return strcmp(((const char *)a), ((const char *)b));
 }
 
-ProvolSymbS provol_program_check_symbol(const ProvolProgram *p, const char *sym) {
+static ProvolSymbS provol_program_check_symbol(const ProvolProgram *p, const char *sym) {
 	union {
 		ProvolVar *v;
 		const char *f;
@@ -286,6 +326,31 @@ ProvolSymbS provol_program_check_symbol(const ProvolProgram *p, const char *sym)
 		return P_FUN;
 
 	return P_UNDEF;
+}
+
+static void provol_program_init_var(const ProvolProgram *p, const char *sym) {
+	ProvolVar *v;
+
+	assert(p != NULL);
+	assert(sym != NULL);
+
+	v = (ProvolVar *)llist_search(p->loc, sym, &cmp_var);
+	if (v != NULL) {
+		v->is_init = 1;
+		return;
+	}
+
+	v = (ProvolVar *)llist_search(p->in, sym, &cmp_var);
+	if (v != NULL) {
+		v->is_init = 1;
+		return;
+	}
+
+	v = (ProvolVar *)llist_search(p->out, sym, &cmp_var);
+	if (v != NULL) {
+		v->is_init = 1;
+		return;
+	}
 }
 
 static void provol_cmd_print(const ProvolCmd *c, const int l) {
@@ -367,5 +432,21 @@ void provol_prog_print_tree(const ProvolProgram *p) {
 	puts("CMDS:");
 
 	provol_cmds_print_tree(p->cmds, 0);
+}
+
+static void provol_new_local_var(const ProvolProgram *p, const char *id) {
+	ProvolVar *var;
+
+	assert(p != NULL);
+	assert(id != NULL);
+
+	var = (ProvolVar *)malloc(sizeof(ProvolVar));
+	if (var == NULL)
+		return;
+
+	var->id = id;
+	var->is_init = 1;
+
+	llist_append(p->loc, (void *)var);
 }
 

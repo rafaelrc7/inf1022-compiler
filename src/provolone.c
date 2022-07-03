@@ -29,6 +29,7 @@ int main(int argc, char **argv) {
 
 		yyin = in;
 		yyparse(p);
+		provol_prog_print_tree(p);
 		if (in != stdin)
 			fclose(in);
 
