@@ -1,0 +1,19 @@
+PROGRAM fib
+ENTRADA	N
+SAIDA	F
+
+ZERO(A)
+ZERO(B)	INC(B)
+
+C = A
+
+REPITA N VEZES
+	A = B
+	B = C
+	C = A + B
+FIM
+
+F = C
+
+FIM
+
