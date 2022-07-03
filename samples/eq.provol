@@ -1,0 +1,11 @@
+PROGRAM eq
+ENTRADA A, B, C
+SAIDA	D, E
+
+D = A * B
+D = D + C
+
+E = B * C
+E = E - A
+
+FIM

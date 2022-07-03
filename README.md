@@ -99,6 +99,32 @@ $ ./iseven 101
 is 101 even: false
 ```
 
+#### eq
+Esse programa recebe 3 números por argumento (A, B, C), e executa 2 simples
+equações, devolvendo os resultados em D e E;
+
+D = A * B + C
+
+E = B * C - A
+
+```sh
+$ ./eq 1 2 3
+1 * 2 + 3 = 5
+2 * 3 - 1 = 5
+
+$ ./eq 10 20 30
+10 * 20 + 30 = 230
+20 * 30 - 10 = 590
+
+$ ./eq 50 2 30
+50 * 2 + 30 = 130
+2 * 30 - 50 = 10
+
+$ ./eq 0 5 30
+0 * 5 + 30 = 30
+5 * 30 - 0 = 150
+```
+
 ## License
 Licensed under the [MIT License](/COPYING).
 
