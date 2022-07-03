@@ -118,6 +118,8 @@ int main(int argc, char **argv) {
 			rewind(tmp);
 			in = tmp;
 			provol_prog_free(p);
+
+			++count;
 		}
 	}
 
